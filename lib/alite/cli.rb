@@ -6,7 +6,7 @@ require 'json'
 module Alite
   class CLI < Thor
     include Thor::Actions
-    map '-s' => :suggest
+    map '-s' => :script_filter
     map '-d' => :diff
 
     class_option :config, aliases: '-c', type: :string, default: DEFAULT_CONFIG_PATH, desc: 'config file'
@@ -20,8 +20,8 @@ module Alite
 
     desc '-s', 'suggest'
     option :words, aliases: '-w', type: :string, required: true, desc: 'words'
-    def suggest
-      results = @core.suggestion_results(options[:words])
+    def script_filter
+      results = @core.make_script_filter(options[:words])
       puts results.to_json
     end
 

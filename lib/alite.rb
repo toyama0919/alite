@@ -8,7 +8,7 @@ require 'alite/cli'
 
 module Alite
   def self.suggest(words, config: DEFAULT_CONFIG_PATH, profile: DEFAULT_CONFIG_PROFILE)
-    get_core(config, profile).suggestion_results(words)
+    get_core(config, profile).make_script_filter(words)
   end
 
   def self.diff(data, config: DEFAULT_CONFIG_PATH, profile: DEFAULT_CONFIG_PROFILE)

@@ -14,10 +14,11 @@ module Alite
       @order = @config['order']
       @where = @config['where']
       @initial_limit = @config['initial_limit'] || DEFAULT_INITIAL_LIMIT
+      @table_name = @config['table_name']
+
       @title_key = @config['title_key']
       @subtitle_key = @config['subtitle_key']
       @output_key = @config['output_key']
-      @table_name = @config['table_name']
     end
 
     def diff(data)
@@ -28,7 +29,7 @@ module Alite
       selected
     end
 
-    def suggestion_results(words)
+    def make_script_filter(words)
       array = []
       @db.prepare(make_sql(words)).execute.each_hash do |row|
         array.push row
