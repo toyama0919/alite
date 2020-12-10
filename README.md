@@ -1,13 +1,32 @@
 # alite [![Build Status](https://secure.travis-ci.org/toyama0919/alite.png?branch=master)](http://travis-ci.org/toyama0919/alite)
 
-TODO: Summary
+alfred workfowのscript filterのjsonをsqlite3から生成するtoolです。
 
-TODO: Description
+## Settings Examples
 
-## Examples
+$HOME/.alite
 
-    $ alite sample
-    #=> hoge
+```yaml
+search_logs:
+  database: '<%=ENV['HOME'] %>/.sqlite/suggest.db'
+  table_name: search_logs
+  title_key: keyword
+  subtitle_key: keyword
+  output_key: keyword
+  columns:
+    - keyword
+  order: "created_at"
+  initial_limit: 200
+```
+
+If you run the following code, alfred json will be output, so you can use it in script filter.
+
+```ruby
+require "alite"
+require "json"
+
+puts Alite.suggest(ARGV[0], profile: "search_logs").to_json
+```
 
 ## Installation
 
@@ -22,10 +41,6 @@ And then execute:
 Or install it yourself as:
 
     $ gem install alite
-
-## Synopsis
-
-    $ alite
 
 ## Contributing
 
