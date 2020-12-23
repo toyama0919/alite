@@ -15,6 +15,7 @@ module Alite
       @where = @config['where']
       @initial_limit = @config['initial_limit'] || DEFAULT_INITIAL_LIMIT
       @table_name = @config['table_name']
+      @uid = @config['uid']
 
       @title_key = @config['title_key']
       @subtitle_key = @config['subtitle_key']
@@ -77,7 +78,7 @@ module Alite
           subtitle = word[@subtitle_key].force_encoding('UTF-8').scrub
         end
 
-        item['uid'] = arg
+        item['uid'] = arg if @uid
         item['arg'] = arg
         item['valid'] = 'yes'
         item['autocomplete'] = title
