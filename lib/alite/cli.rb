@@ -15,7 +15,9 @@ module Alite
       super(args, options, config)
       @class_options = config[:shell].base.options
       config = Util.get_profile(@class_options[:config], @class_options[:profile])
-      @core = Core.new(config)
+      if config
+        @core = Core.new(config)
+      end
     end
 
     desc '-s', 'suggest'

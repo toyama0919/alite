@@ -14,9 +14,9 @@ describe Alite::CLI do
 
   it "include" do
     output = capture_stdout do
-      Alite::CLI.start(['help', 'sample'])
+      Alite::CLI.start(['help', 'script_filter'])
     end
-    expect(output).to include('--fields')
+    expect(output).to include('--words')
   end
 
   after do

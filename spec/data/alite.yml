@@ -1,0 +1,11 @@
+default:
+  adapter: sqlite3
+  database: 'spec/data/alite.db'
+  table_name: keywords
+  title_key: keyword
+  subtitle_key: keyword
+  output_key: keyword
+  columns:
+    - keyword
+  order: created_at
+  initial_limit: 30
