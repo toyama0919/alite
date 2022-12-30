@@ -33,12 +33,6 @@ module Alite
     private
 
     def make_sql(words)
-      sql_array = []
-      words.split(' ').each do |word|
-        where = @columns.map { |column| "(#{column} like '%#{word}%')" }.join(' or ')
-        where = "(#{where})"
-        sql_array.push(where)
-      end
       sql = %(
         select
           distinct
@@ -50,7 +44,12 @@ module Alite
       )
 
       wheres = []
-      wheres << sql_array.join(' and ').to_s unless words.empty?
+      words.split(' ').each do |word|
+        where = @columns.map { |column| "(#{column} like '%#{word}%')" }.join(' or ')
+        where = "(#{where})"
+        wheres.push(where)
+      end
+      wheres << wheres.join(' and ').to_s unless words.empty?
       wheres << "(#{@where})" if @where
       sql += " where #{wheres.join(' and ')}" unless wheres.empty?
       sql += " order by `#{@order}` desc" if @order
