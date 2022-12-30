@@ -22,14 +22,6 @@ module Alite
       @output_key = @config['output_key']
     end
 
-    def diff(data)
-      latest_date = get_latest_date
-      selected = data.select do |record|
-        record[@config['order']].to_time > latest_date
-      end
-      selected
-    end
-
     def make_script_filter(words)
       array = []
       @db.prepare(make_sql(words)).execute.each_hash do |row|
@@ -89,12 +81,6 @@ module Alite
       result = {}
       result['items'] = items
       result
-    end
-
-    def get_latest_date
-      sql = "select max(`#{@order}`) from #{@table_name}"
-      result = @db.prepare(sql).execute.first.first
-      Time.parse(result)
     end
   end
 end
