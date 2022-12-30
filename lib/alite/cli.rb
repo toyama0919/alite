@@ -26,14 +26,5 @@ module Alite
       results = @core.make_script_filter(options[:words])
       puts results.to_json
     end
-
-    desc '-d', 'diff'
-    def diff
-      require 'active_support/core_ext/string'
-      exit 1 if STDIN.tty?
-      data = JSON.parse(STDIN.read)
-      selected = @core.diff(data)
-      puts selected.to_json
-    end
   end
 end
