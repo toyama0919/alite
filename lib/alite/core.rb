@@ -39,22 +39,30 @@ module Alite
           #{@config['title_key']} as title,
           #{@config['subtitle_key']} as subtitle,
           #{@config['arg_key']} as arg
-        from
+          from
           #{@config['table_name']}
       )
 
+      wheres = [
+        make_where_match_query(words),
+        @where_base ? "(#{@where_base})" : "1 = 1",
+      ]
+      where_query = wheres.compact.join(' and ')
+      sql += " where #{where_query}"
+      sql += " order by `#{@order}` desc" if @order
+      sql += " limit #{@initial_limit}"
+      sql
+    end
+
+    def make_where_match_query(words)
+      return nil if words.empty?
       wheres = []
-      words.split(' ').each do |word|
+      words.split.each do |word|
         where = @where_match_columns.map { |column| "(#{column} like '%#{word}%')" }.join(' or ')
         where = "(#{where})"
         wheres.push(where)
       end
-      wheres << wheres.join(' and ').to_s unless words.empty?
-      wheres << "(#{@where_base})" if @where_base
-      sql += " where #{wheres.join(' and ')}" unless wheres.empty?
-      sql += " order by `#{@order}` desc" if @order
-      sql += " limit #{@initial_limit}" if words.empty?
-      sql
+      wheres.join(' and ').to_s
     end
 
     def convert(results)
