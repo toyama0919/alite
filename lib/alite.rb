@@ -11,10 +11,6 @@ module Alite
     get_core(config, profile).make_script_filter(words)
   end
 
-  def self.diff(data, config: DEFAULT_CONFIG_PATH, profile: DEFAULT_CONFIG_PROFILE)
-    get_core(config, profile).diff(data)
-  end
-
   def self.get_core(config, profile)
     Core.new(Util.get_profile(config, profile))
   end

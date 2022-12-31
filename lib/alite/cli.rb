@@ -7,7 +7,6 @@ module Alite
   class CLI < Thor
     include Thor::Actions
     map '-s' => :script_filter
-    map '-d' => :diff
 
     class_option :config, aliases: '-c', type: :string, default: DEFAULT_CONFIG_PATH, desc: 'config file'
     class_option :profile, aliases: '-p', type: :string, default: DEFAULT_CONFIG_PROFILE, desc: 'profile name'
