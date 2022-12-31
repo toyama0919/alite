@@ -15,7 +15,7 @@ module Alite
       @class_options = config[:shell].base.options
       config = Util.get_profile(@class_options[:config], @class_options[:profile])
       if config
-        @core = Core.new(config)
+        @core = config["sql"] ? Sql.new(config) : Core.new(config)
       end
     end
 
