@@ -19,7 +19,7 @@ module Alite
 
       @title_key = @config['title_key']
       @subtitle_key = @config['subtitle_key']
-      @output_key = @config['output_key']
+      @arg_key = @config['arg_key']
     end
 
     def make_script_filter(words)
@@ -38,7 +38,7 @@ module Alite
           distinct
           #{@config['title_key']},
           #{@config['subtitle_key']},
-          #{@config['output_key']}
+          #{@config['arg_key']}
         from
           #{@config['table_name']}
       )
@@ -61,20 +61,20 @@ module Alite
       items = []
       results.each do |word|
         item = {}
-        output = word[@output_key].to_s
-        arg = output.force_encoding('UTF-8').scrub
+
         title = word[@title_key].force_encoding('UTF-8').scrub
         subtitle = ''
         if word[@subtitle_key]
           subtitle = word[@subtitle_key].force_encoding('UTF-8').scrub
         end
+        arg = word[@arg_key].to_s.force_encoding('UTF-8').scrub
 
-        item['uid'] = arg if @uid
-        item['arg'] = arg
-        item['valid'] = 'yes'
-        item['autocomplete'] = title
         item['title'] = title
         item['subtitle'] = subtitle
+        item['arg'] = arg
+        item['uid'] = arg if @uid
+        item['valid'] = true
+        item['autocomplete'] = title
         items << item
       end
       result = {}
