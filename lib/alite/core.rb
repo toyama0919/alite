@@ -36,9 +36,9 @@ module Alite
       sql = %(
         select
           distinct
-          #{@config['title_key']},
-          #{@config['subtitle_key']},
-          #{@config['arg_key']}
+          #{@config['title_key']} as title,
+          #{@config['subtitle_key']} as subtitle,
+          #{@config['arg_key']} as arg
         from
           #{@config['table_name']}
       )
@@ -59,15 +59,15 @@ module Alite
 
     def convert(results)
       items = []
-      results.each do |word|
+      results.each do |result|
         item = {}
 
-        title = word[@title_key].force_encoding('UTF-8').scrub
+        title = result["title"].force_encoding('UTF-8').scrub
         subtitle = ''
-        if word[@subtitle_key]
-          subtitle = word[@subtitle_key].force_encoding('UTF-8').scrub
+        if result["subtitle"]
+          subtitle = result["subtitle"].force_encoding('UTF-8').scrub
         end
-        arg = word[@arg_key].to_s.force_encoding('UTF-8').scrub
+        arg = result["arg"].to_s.force_encoding('UTF-8').scrub
 
         item['title'] = title
         item['subtitle'] = subtitle
@@ -77,9 +77,7 @@ module Alite
         item['autocomplete'] = title
         items << item
       end
-      result = {}
-      result['items'] = items
-      result
+      { items: items }
     end
   end
 end
