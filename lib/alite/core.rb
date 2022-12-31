@@ -10,16 +10,17 @@ module Alite
       @logger = Logger.new(STDOUT)
       @config = config
       @db = ::SQLite3::Database.new @config['database']
-      @where_match_columns = config['where_match_columns']
-      @order = @config['order']
-      @where_base = @config['where_base']
-      @initial_limit = @config['initial_limit'] || DEFAULT_INITIAL_LIMIT
       @table_name = @config['table_name']
-      @uid = @config['uid']
-
+      @where_match_columns = config['where_match_columns']
       @title_key = @config['title_key']
       @subtitle_key = @config['subtitle_key']
       @arg_key = @config['arg_key']
+
+      # optional
+      @where_base = @config['where_base']
+      @order = @config['order']
+      @initial_limit = @config['initial_limit'] || DEFAULT_INITIAL_LIMIT
+      @uid = @config['uid']
     end
 
     def make_script_filter(words)
