@@ -10,9 +10,9 @@ module Alite
       @logger = Logger.new(STDOUT)
       @config = config
       @db = ::SQLite3::Database.new @config['database']
-      @columns = config['columns']
+      @where_match_columns = config['where_match_columns']
       @order = @config['order']
-      @where = @config['where']
+      @where_base = @config['where_base']
       @initial_limit = @config['initial_limit'] || DEFAULT_INITIAL_LIMIT
       @table_name = @config['table_name']
       @uid = @config['uid']
@@ -45,12 +45,12 @@ module Alite
 
       wheres = []
       words.split(' ').each do |word|
-        where = @columns.map { |column| "(#{column} like '%#{word}%')" }.join(' or ')
+        where = @where_match_columns.map { |column| "(#{column} like '%#{word}%')" }.join(' or ')
         where = "(#{where})"
         wheres.push(where)
       end
       wheres << wheres.join(' and ').to_s unless words.empty?
-      wheres << "(#{@where})" if @where
+      wheres << "(#{@where_base})" if @where_base
       sql += " where #{wheres.join(' and ')}" unless wheres.empty?
       sql += " order by `#{@order}` desc" if @order
       sql += " limit #{@initial_limit}" if words.empty?
