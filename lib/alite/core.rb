@@ -10,16 +10,17 @@ module Alite
       @logger = Logger.new(STDOUT)
       @config = config
       @db = ::SQLite3::Database.new @config['database']
-      @columns = config['columns']
-      @order = @config['order']
-      @where = @config['where']
-      @initial_limit = @config['initial_limit'] || DEFAULT_INITIAL_LIMIT
       @table_name = @config['table_name']
-      @uid = @config['uid']
-
+      @where_match_columns = config['where_match_columns']
       @title_key = @config['title_key']
       @subtitle_key = @config['subtitle_key']
-      @output_key = @config['output_key']
+      @arg_key = @config['arg_key']
+
+      # optional
+      @where_base = @config['where_base']
+      @order = @config['order']
+      @initial_limit = @config['initial_limit'] || DEFAULT_INITIAL_LIMIT
+      @uid = @config['uid']
     end
 
     def make_script_filter(words)
@@ -33,54 +34,59 @@ module Alite
     private
 
     def make_sql(words)
-      sql_array = []
-      words.split(' ').each do |word|
-        where = @columns.map { |column| "(#{column} like '%#{word}%')" }.join(' or ')
-        where = "(#{where})"
-        sql_array.push(where)
-      end
       sql = %(
         select
           distinct
-          #{@config['title_key']},
-          #{@config['subtitle_key']},
-          #{@config['output_key']}
-        from
+          #{@config['title_key']} as title,
+          #{@config['subtitle_key']} as subtitle,
+          #{@config['arg_key']} as arg
+          from
           #{@config['table_name']}
       )
 
-      wheres = []
-      wheres << sql_array.join(' and ').to_s unless words.empty?
-      wheres << "(#{@where})" if @where
-      sql += " where #{wheres.join(' and ')}" unless wheres.empty?
+      wheres = [
+        make_where_match_query(words),
+        @where_base ? "(#{@where_base})" : "1 = 1",
+      ]
+      where_query = wheres.compact.join(' and ')
+      sql += " where #{where_query}"
       sql += " order by `#{@order}` desc" if @order
-      sql += " limit #{@initial_limit}" if words.empty?
+      sql += " limit #{@initial_limit}"
       sql
+    end
+
+    def make_where_match_query(words)
+      return nil if words.empty?
+      wheres = []
+      words.split.each do |word|
+        where = @where_match_columns.map { |column| "(#{column} like '%#{word}%')" }.join(' or ')
+        where = "(#{where})"
+        wheres.push(where)
+      end
+      wheres.join(' and ').to_s
     end
 
     def convert(results)
       items = []
-      results.each do |word|
+      results.each do |result|
         item = {}
-        output = word[@output_key].to_s
-        arg = output.force_encoding('UTF-8').scrub
-        title = word[@title_key].force_encoding('UTF-8').scrub
-        subtitle = ''
-        if word[@subtitle_key]
-          subtitle = word[@subtitle_key].force_encoding('UTF-8').scrub
-        end
 
-        item['uid'] = arg if @uid
-        item['arg'] = arg
-        item['valid'] = 'yes'
-        item['autocomplete'] = title
+        title = result["title"].force_encoding('UTF-8').scrub
+        subtitle = ''
+        if result["subtitle"]
+          subtitle = result["subtitle"].force_encoding('UTF-8').scrub
+        end
+        arg = result["arg"].to_s.force_encoding('UTF-8').scrub
+
         item['title'] = title
         item['subtitle'] = subtitle
+        item['arg'] = arg
+        item['uid'] = arg if @uid
+        item['valid'] = true
+        item['autocomplete'] = title
         items << item
       end
-      result = {}
-      result['items'] = items
-      result
+      { items: items }
     end
   end
 end
