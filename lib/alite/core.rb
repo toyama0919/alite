@@ -83,7 +83,7 @@ module Alite
         item['arg'] = arg
         item['uid'] = arg if @uid
         item['valid'] = true
-        item['autocomplete'] = title
+        item['autocomplete'] = result["autocomplete"] ? result["autocomplete"] : title
         items << item
       end
       { items: items }
