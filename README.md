@@ -1,6 +1,6 @@
 # alite [![Build Status](https://secure.travis-ci.org/toyama0919/alite.png?branch=master)](http://travis-ci.org/toyama0919/alite)
 
-alfred workfowのscript filterのjsonをsqlite3から生成するtoolです。
+Tool to generate json for alfred workfow's script filter from sqlite3.
 
 ## Settings Examples(Normal Mode)
 
@@ -11,7 +11,7 @@ search_logs:
   database: '<%=ENV['HOME'] %>/.sqlite/suggest.db'
   table_name: search_logs
   title_key: keyword
-  subtitle_key: keyword
+  subtitle_key: created_at
   arg_key: keyword
   where_match_columns:
     - keyword
@@ -28,24 +28,44 @@ search_logs:
   * arg
 
 ```yaml
-hatebu:
+search_logs:
   adapter: sqlite3
-  database: '<%=ENV['HOME'] %>/.sqlite/hatena.db'
+  database: '<%=ENV['HOME'] %>/.sqlite/suggest.db'
   where_match_columns:
-    - title
-    - link
-    - description
+    - keyword
   sql: |
     select
-      title as title,
-      title as subtitle,
-      link as arg
-    from hatebu
+      keyword as title,
+      created_at as subtitle,
+      keyword as arg
+    from search_logs
     where
       1 = 1
     order by updated_at desc
     limit 100
-  uid: false
+```
+
+### execute
+
+```bash
+$ alite -s -w amazon -p search_logs | jq .
+{
+  "items": [
+    {
+      "title": "amazon",
+      "subtitle": "2023-01-03 12:07:16.956710",
+      "arg": "amazon",
+      "valid": true,
+      "autocomplete": "amazon"
+    },
+    {
+      "title": "amazon ring doorbell 4",
+      "subtitle": "2023-01-02 01:49:35.937582",
+      "arg": "amazon ring doorbell 4",
+      "valid": true,
+      "autocomplete": "amazon ring doorbell 4"
+    },
+...
 ```
 
 ## Ruby API
