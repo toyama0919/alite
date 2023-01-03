@@ -6,8 +6,8 @@ require 'string/scrub' if RUBY_VERSION.to_f < 2.1
 
 module Alite
   class Core
-    def initialize(config)
-      @logger = Logger.new(STDOUT)
+    def initialize(config, verbose=false)
+      @logger = get_logger(verbose)
       @config = config
       @db = ::SQLite3::Database.new @config['database']
       @table_name = @config['table_name']
@@ -25,13 +25,22 @@ module Alite
 
     def make_script_filter(words)
       array = []
-      @db.prepare(make_sql(words)).execute.each_hash do |row|
+      sql = make_sql(words)
+      @logger.debug(@config)
+      @logger.debug(sql)
+      @db.prepare(sql).execute.each_hash do |row|
         array.push row
       end
       convert(array)
     end
 
     private
+
+    def get_logger(verbose=false)
+      logger = Logger.new(STDERR)
+      logger.level = verbose ? Logger::DEBUG : Logger::INFO
+      return logger
+    end
 
     def make_sql(words)
       sql = %(

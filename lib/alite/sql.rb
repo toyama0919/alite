@@ -8,8 +8,8 @@ require 'ostruct'
 
 module Alite
   class Sql < Core
-    def initialize(config)
-      @logger = Logger.new(STDOUT)
+    def initialize(config, verbose=false)
+      @logger = get_logger(verbose)
       @config = config
       @db = ::SQLite3::Database.new @config['database']
       @sql = @config['sql']
