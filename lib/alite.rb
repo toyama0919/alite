@@ -14,7 +14,7 @@ module Alite
 
   def self.get_core(config_path, profile)
     config = Util.get_profile(config_path, profile)
-    config["sql"] ? Sql.new(config) : Core.new(config)
+    config['sql'] ? Sql.new(config) : Core.new(config)
   end
   private_class_method :get_core
 end

@@ -1,0 +1,31 @@
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 2.6
+  SuggestExtensions: false
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+Style/Documentation:
+  Enabled: false
+
+Style/MixinUsage:
+  Exclude:
+    - 'spec/**/*'
+
+Style/OptionalBooleanParameter:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/AbcSize:
+  Max: 30
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+Lint/MissingSuper:
+  Exclude:
+    - 'lib/alite/sql.rb'
