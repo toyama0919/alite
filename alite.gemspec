@@ -1,31 +1,34 @@
-# -*- encoding: utf-8 -*-
+# frozen_string_literal: true
 
-require File.expand_path('../lib/alite/version', __FILE__)
+require 'English'
+require File.expand_path('lib/alite/version', __dir__)
 
 Gem::Specification.new do |gem|
-  gem.name          = "alite"
+  gem.name          = 'alite'
   gem.version       = Alite::VERSION
-  gem.summary       = %q{Summary}
-  gem.description   = %q{Description}
-  gem.license       = "MIT"
-  gem.authors       = ["Hiroshi Toyama"]
-  gem.email         = "toyama0919@gmail.com"
-  gem.homepage      = "https://github.com/toyama0919/alite"
+  gem.summary       = 'Summary'
+  gem.description   = 'Description'
+  gem.license       = 'MIT'
+  gem.authors       = ['Hiroshi Toyama']
+  gem.email         = 'toyama0919@gmail.com'
+  gem.homepage      = 'https://github.com/toyama0919/alite'
 
-  gem.files         = `git ls-files`.split($/)
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+  gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
+  gem.executables   = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   gem.require_paths = ['lib']
 
-  gem.add_dependency 'thor'
-  gem.add_dependency 'sqlite3'
-  gem.add_dependency 'activesupport'
+  gem.required_ruby_version = '>= 2.6.0'
 
-  gem.add_development_dependency 'bundler', '~> 2.1.4'
-  gem.add_development_dependency 'pry', '~> 0.11.3'
-  gem.add_development_dependency "rake", ">= 12.3.3"
-  gem.add_development_dependency 'rdoc', '~> 4.0'
+  gem.add_dependency 'activesupport'
+  gem.add_dependency 'sqlite3', '~> 1.5.0'
+  gem.add_dependency 'thor'
+
+  gem.add_development_dependency 'bundler'
+  gem.add_development_dependency 'pry'
+  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'rdoc'
   gem.add_development_dependency 'rspec', '~> 3.0'
-  gem.add_development_dependency 'rubocop', '~> 0.52.0'
+  gem.add_development_dependency 'rubocop'
   gem.add_development_dependency 'rubygems-tasks', '~> 0.2'
+  gem.metadata['rubygems_mfa_required'] = 'true'
 end

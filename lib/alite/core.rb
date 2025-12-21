@@ -6,7 +6,7 @@ require 'string/scrub' if RUBY_VERSION.to_f < 2.1
 
 module Alite
   class Core
-    def initialize(config, verbose=false)
+    def initialize(config, verbose = false)
       @logger = get_logger(verbose)
       @config = config
       @db = ::SQLite3::Database.new @config['database']
@@ -36,10 +36,10 @@ module Alite
 
     private
 
-    def get_logger(verbose=false)
-      logger = Logger.new(STDERR)
+    def get_logger(verbose = false)
+      logger = Logger.new($stderr)
       logger.level = verbose ? Logger::DEBUG : Logger::INFO
-      return logger
+      logger
     end
 
     def make_sql(words)
@@ -55,7 +55,7 @@ module Alite
 
       wheres = [
         make_where_match_query(words),
-        @where_base ? "(#{@where_base})" : "1 = 1",
+        @where_base ? "(#{@where_base})" : '1 = 1'
       ]
       where_query = wheres.compact.join(' and ')
       sql += " where #{where_query}"
@@ -66,6 +66,7 @@ module Alite
 
     def make_where_match_query(words)
       return nil if words.empty?
+
       wheres = []
       words.split.each do |word|
         where = @where_match_columns.map { |column| "(#{column} like '%#{word}%')" }.join(' or ')
@@ -80,19 +81,17 @@ module Alite
       results.each do |result|
         item = {}
 
-        title = result["title"].force_encoding('UTF-8').scrub
+        title = result['title'].force_encoding('UTF-8').scrub
         subtitle = ''
-        if result["subtitle"]
-          subtitle = result["subtitle"].force_encoding('UTF-8').scrub
-        end
-        arg = result["arg"].to_s.force_encoding('UTF-8').scrub
+        subtitle = result['subtitle'].force_encoding('UTF-8').scrub if result['subtitle']
+        arg = result['arg'].to_s.force_encoding('UTF-8').scrub
 
         item['title'] = title
         item['subtitle'] = subtitle
         item['arg'] = arg
         item['uid'] = arg if @uid
         item['valid'] = true
-        item['autocomplete'] = result["autocomplete"] ? result["autocomplete"] : title
+        item['autocomplete'] = result['autocomplete'] || title
         items << item
       end
       { items: items }

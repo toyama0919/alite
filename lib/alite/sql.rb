@@ -8,7 +8,7 @@ require 'ostruct'
 
 module Alite
   class Sql < Core
-    def initialize(config, verbose=false)
+    def initialize(config, verbose = false)
       @logger = get_logger(verbose)
       @config = config
       @db = ::SQLite3::Database.new @config['database']
@@ -23,9 +23,8 @@ module Alite
 
     def make_sql(words)
       where_match_query = make_where_match_query(words)
-      where_match_query = (where_match_query ? where_match_query : "1 = 1")
-      sql = @sql.sub("where", "where #{where_match_query} and ")
-      sql
+      where_match_query ||= '1 = 1'
+      @sql.sub('where', "where #{where_match_query} and ")
     end
   end
 end

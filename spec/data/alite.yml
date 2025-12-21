@@ -4,8 +4,8 @@ default:
   table_name: keywords
   title_key: keyword
   subtitle_key: keyword
-  output_key: keyword
-  columns:
+  arg_key: keyword
+  where_match_columns:
     - keyword
   order: created_at
   initial_limit: 30
