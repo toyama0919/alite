@@ -8,8 +8,8 @@ require 'alite/sql'
 require 'alite/cli'
 
 module Alite
-  def self.suggest(words, config: DEFAULT_CONFIG_PATH, profile: DEFAULT_CONFIG_PROFILE)
-    get_core(config, profile).make_script_filter(words)
+  def self.suggest(words, config: DEFAULT_CONFIG_PATH, profile: DEFAULT_CONFIG_PROFILE, arg_vars: nil)
+    get_core(config, profile).make_script_filter(words, arg_vars)
   end
 
   def self.get_core(config_path, profile)
