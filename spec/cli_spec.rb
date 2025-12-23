@@ -16,7 +16,7 @@ describe Alite::CLI do
     output = capture_stdout do
       Alite::CLI.start(%w[help script_filter])
     end
-    expect(output).to include('--words')
+    expect(output).to include('--query')
     expect(output).to include('-w')
   end
 
@@ -24,7 +24,7 @@ describe Alite::CLI do
     output = capture_stdout do
       Alite::CLI.start([
                          'script_filter',
-                         '--words', 'myword',
+                         '--query', 'myword',
                          '--config', 'spec/data/alite.yml',
                          '--profile', 'default'
                        ])
