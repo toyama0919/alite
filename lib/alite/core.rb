@@ -23,15 +23,17 @@ module Alite
       @uid = @config['uid']
     end
 
-    def make_script_filter(words)
-      array = []
-      sql = make_sql(words)
+    def make_script_filter(query, arg_vars = nil)
+      sql = make_sql(query)
       @logger.debug(@config)
       @logger.debug(sql)
+
+      items = []
       @db.prepare(sql).execute.each_hash do |row|
-        array.push row
+        items << convert_row(row, arg_vars)
       end
-      convert(array)
+
+      { items: items }
     end
 
     private
@@ -42,7 +44,7 @@ module Alite
       logger
     end
 
-    def make_sql(words)
+    def make_sql(query)
       sql = %(
         select
           distinct
@@ -54,7 +56,7 @@ module Alite
       )
 
       wheres = [
-        make_where_match_query(words),
+        make_where_match_query(query),
         @where_base ? "(#{@where_base})" : '1 = 1'
       ]
       where_query = wheres.compact.join(' and ')
@@ -64,11 +66,11 @@ module Alite
       sql
     end
 
-    def make_where_match_query(words)
-      return nil if words.empty?
+    def make_where_match_query(query)
+      return nil if query.empty?
 
       wheres = []
-      words.split.each do |word|
+      query.split.each do |word|
         where = @where_match_columns.map { |column| "(#{column} like '%#{word}%')" }.join(' or ')
         where = "(#{where})"
         wheres.push(where)
@@ -76,25 +78,36 @@ module Alite
       wheres.join(' and ').to_s
     end
 
-    def convert(results)
-      items = []
-      results.each do |result|
-        item = {}
+    def convert_row(result, arg_vars = nil)
+      title = result['title'].force_encoding('UTF-8').scrub
+      subtitle = ''
+      subtitle = result['subtitle'].force_encoding('UTF-8').scrub if result['subtitle']
+      arg = build_arg(result, arg_vars)
 
-        title = result['title'].force_encoding('UTF-8').scrub
-        subtitle = ''
-        subtitle = result['subtitle'].force_encoding('UTF-8').scrub if result['subtitle']
-        arg = result['arg'].to_s.force_encoding('UTF-8').scrub
+      item = {
+        'title' => title,
+        'subtitle' => subtitle,
+        'arg' => arg,
+        'valid' => true,
+        'autocomplete' => result['autocomplete'] || title
+      }
+      item['uid'] = arg if @uid
+      item
+    end
 
-        item['title'] = title
-        item['subtitle'] = subtitle
-        item['arg'] = arg
-        item['uid'] = arg if @uid
-        item['valid'] = true
-        item['autocomplete'] = result['autocomplete'] || title
-        items << item
+    def build_arg(result, arg_vars = nil)
+      arg = result['arg'].to_s.force_encoding('UTF-8').scrub
+
+      if arg_vars
+        # argに含まれる${変数名}を、arg_varsで指定された値で置換
+        arg.gsub(/\$\{(\w+)\}/) do
+          key = Regexp.last_match(1)
+          arg_vars[key] || arg_vars[key.to_sym] || "${#{key}}"
+        end
+      else
+        # 従来通り arg の値をそのまま返す
+        arg
       end
-      { items: items }
     end
   end
 end

@@ -22,9 +22,10 @@ module Alite
     end
 
     desc '-s', 'suggest'
-    option :words, aliases: '-w', type: :string, required: true, desc: 'words'
+    option :query, aliases: '-w', type: :string, required: true, desc: 'query'
+    option :arg_vars, aliases: '-a', type: :hash, desc: 'arg variables (e.g., id:123 name:value)'
     def script_filter
-      results = @core.make_script_filter(options[:words])
+      results = @core.make_script_filter(options[:query], options[:arg_vars])
       puts results.to_json
     end
   end
