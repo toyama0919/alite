@@ -17,10 +17,11 @@ Gem::Specification.new do |gem|
   gem.executables   = gem.files.grep(%r{^bin/}).map { |f| File.basename(f) }
   gem.require_paths = ['lib']
 
-  gem.required_ruby_version = '>= 2.6.0'
+  gem.required_ruby_version = '>= 3.1.0'
 
   gem.add_dependency 'activesupport'
-  gem.add_dependency 'sqlite3', '~> 1.5.0'
+  gem.add_dependency 'ostruct'
+  gem.add_dependency 'sqlite3', '~> 2.4'
   gem.add_dependency 'thor'
 
   gem.add_development_dependency 'bundler'

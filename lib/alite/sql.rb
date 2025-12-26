@@ -2,7 +2,6 @@
 
 require 'logger'
 require 'sqlite3'
-require 'string/scrub' if RUBY_VERSION.to_f < 2.1
 require 'erb'
 require 'ostruct'
 

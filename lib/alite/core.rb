@@ -2,7 +2,6 @@
 
 require 'logger'
 require 'sqlite3'
-require 'string/scrub' if RUBY_VERSION.to_f < 2.1
 
 module Alite
   class Core
@@ -79,9 +78,9 @@ module Alite
     end
 
     def convert_row(result, arg_vars = nil)
-      title = result['title'].force_encoding('UTF-8').scrub
+      title = result['title'].dup.force_encoding('UTF-8').scrub
       subtitle = ''
-      subtitle = result['subtitle'].force_encoding('UTF-8').scrub if result['subtitle']
+      subtitle = result['subtitle'].dup.force_encoding('UTF-8').scrub if result['subtitle']
       arg = build_arg(result, arg_vars)
 
       item = {
@@ -96,7 +95,7 @@ module Alite
     end
 
     def build_arg(result, arg_vars = nil)
-      arg = result['arg'].to_s.force_encoding('UTF-8').scrub
+      arg = result['arg'].to_s.dup.force_encoding('UTF-8').scrub
 
       if arg_vars
         # argに含まれる${変数名}を、arg_varsで指定された値で置換
