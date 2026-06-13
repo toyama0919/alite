@@ -34,4 +34,58 @@ describe Alite::CLI do
     expect(result).to have_key('items')
     expect(result['items']).to be_an(Array)
   end
+
+  it 'filters results by the given query' do
+    output = capture_stdout do
+      Alite::CLI.start([
+                         'script_filter',
+                         '--query', 'myword2',
+                         '--config', 'spec/data/alite.yml',
+                         '--profile', 'default'
+                       ])
+    end
+    result = JSON.parse(output)
+    expect(result['items'].length).to eq(1)
+    expect(result['items'].first['title']).to eq('myword2')
+  end
+
+  it 'substitutes arg vars passed via --arg_vars' do
+    output = capture_stdout do
+      Alite::CLI.start([
+                         'script_filter',
+                         '--query', 'myword2',
+                         '--arg_vars', 'id:123', 'name:alice',
+                         '--config', 'spec/data/alite.yml',
+                         '--profile', 'with_arg_vars'
+                       ])
+    end
+    result = JSON.parse(output)
+    expect(result['items'].first['arg']).to eq('https://example.com/123/alice')
+  end
+
+  it 'works with a custom sql profile' do
+    output = capture_stdout do
+      Alite::CLI.start([
+                         'script_filter',
+                         '--query', 'myword2',
+                         '--config', 'spec/data/alite.yml',
+                         '--profile', 'sql_profile'
+                       ])
+    end
+    result = JSON.parse(output)
+    expect(result['items'].first['title']).to eq('myword2')
+  end
+
+  it 'maps -s to the script_filter command' do
+    output = capture_stdout do
+      Alite::CLI.start([
+                         '-s',
+                         '--query', 'myword2',
+                         '--config', 'spec/data/alite.yml',
+                         '--profile', 'default'
+                       ])
+    end
+    result = JSON.parse(output)
+    expect(result['items'].first['title']).to eq('myword2')
+  end
 end
