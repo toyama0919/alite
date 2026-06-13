@@ -10,7 +10,7 @@ module Alite
     def initialize(config, verbose = false)
       @logger = get_logger(verbose)
       @config = config
-      @db = ::SQLite3::Database.new @config['database']
+      @db = open_database(@config)
       @sql = @config['sql']
       @where_match_columns = config['where_match_columns']
 

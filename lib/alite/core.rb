@@ -8,7 +8,7 @@ module Alite
     def initialize(config, verbose = false)
       @logger = get_logger(verbose)
       @config = config
-      @db = ::SQLite3::Database.new @config['database']
+      @db = open_database(@config)
       @table_name = @config['table_name']
       @where_match_columns = config['where_match_columns']
       @title_key = @config['title_key']
@@ -41,6 +41,19 @@ module Alite
       logger = Logger.new($stderr)
       logger.level = verbose ? Logger::DEBUG : Logger::INFO
       logger
+    end
+
+    # immutable: true の場合、SQLiteのURIファイル名 + immutable=1 で開く。
+    # ロックを一切取らないため、書き込み中のDB(例: 起動中ChromeのHistory)を
+    # コピーせず読み取り専用で直接参照できる。
+    def open_database(config)
+      path = config['database']
+      return ::SQLite3::Database.new(path) unless config['immutable']
+
+      ::SQLite3::Database.new(
+        "file:#{path}?immutable=1",
+        flags: ::SQLite3::Constants::Open::READONLY | ::SQLite3::Constants::Open::URI
+      )
     end
 
     def make_sql(query)
