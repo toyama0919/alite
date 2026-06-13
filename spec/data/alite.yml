@@ -9,3 +9,92 @@ default:
     - keyword
   order: created_at
   initial_limit: 30
+
+no_order:
+  adapter: sqlite3
+  database: 'spec/data/alite.db'
+  table_name: keywords
+  title_key: keyword
+  subtitle_key: keyword
+  arg_key: keyword
+  where_match_columns:
+    - keyword
+
+with_limit:
+  adapter: sqlite3
+  database: 'spec/data/alite.db'
+  table_name: keywords
+  title_key: keyword
+  subtitle_key: keyword
+  arg_key: keyword
+  where_match_columns:
+    - keyword
+  initial_limit: 1
+
+with_where_base:
+  adapter: sqlite3
+  database: 'spec/data/alite.db'
+  table_name: keywords
+  title_key: keyword
+  subtitle_key: keyword
+  arg_key: keyword
+  where_match_columns:
+    - keyword
+  where_base: "keyword = 'myword2'"
+
+with_uid:
+  adapter: sqlite3
+  database: 'spec/data/alite.db'
+  table_name: keywords
+  title_key: keyword
+  subtitle_key: keyword
+  arg_key: keyword
+  where_match_columns:
+    - keyword
+  uid: true
+
+with_arg_vars:
+  adapter: sqlite3
+  database: 'spec/data/alite.db'
+  table_name: keywords
+  title_key: keyword
+  subtitle_key: keyword
+  arg_key: "'https://example.com/${id}/${name}'"
+  where_match_columns:
+    - keyword
+
+erb_profile:
+  adapter: sqlite3
+  database: "<%= 'spec/data/alite.db' %>"
+  table_name: keywords
+  title_key: keyword
+  subtitle_key: keyword
+  arg_key: keyword
+  where_match_columns:
+    - keyword
+
+immutable_profile:
+  adapter: sqlite3
+  database: 'spec/data/alite.db'
+  table_name: keywords
+  title_key: keyword
+  subtitle_key: keyword
+  arg_key: keyword
+  where_match_columns:
+    - keyword
+  immutable: true
+
+sql_profile:
+  adapter: sqlite3
+  database: 'spec/data/alite.db'
+  sql: "select distinct keyword as title, keyword as subtitle, keyword as arg from keywords where 1 = 1 order by created_at desc limit 30"
+  where_match_columns:
+    - keyword
+
+sql_uid_profile:
+  adapter: sqlite3
+  database: 'spec/data/alite.db'
+  sql: "select distinct keyword as title, keyword as subtitle, keyword as arg from keywords where 1 = 1 limit 30"
+  where_match_columns:
+    - keyword
+  uid: true
