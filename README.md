@@ -45,6 +45,61 @@ search_logs:
     limit 100
 ```
 
+## CLI Options
+
+```bash
+$ alite -s -w <query> [options]
+```
+
+| Option | Alias | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `--query` | `-w` | string | (required) | Search query. Space-separated words are AND-matched against `where_match_columns`. |
+| `--arg_vars` | `-a` | hash | none | Variables to interpolate into `arg`. `${name}` placeholders in the row's `arg` are replaced (e.g. `-a id:123 name:value`). Unmatched placeholders are left as-is. |
+| `--config` | `-c` | string | `$HOME/.alite` | Path to the YAML config file. |
+| `--profile` | `-p` | string | `default` | Profile (top-level key) to read from the config file. |
+| `--verbose` | `-V` | boolean | `false` | Print the generated config and SQL to stderr for debugging. |
+| `-s` | | | | Run the `script_filter` command (outputs Alfred JSON). |
+
+## Configuration Options
+
+The config file is YAML and is evaluated through ERB first, so you can embed Ruby
+(e.g. `<%=ENV['HOME'] %>`). Each top-level key is a profile selected with `-p`.
+
+### Common options (both modes)
+
+| Key | Required | Default | Description |
+| --- | --- | --- | --- |
+| `database` | yes | | Path to the SQLite3 database file. |
+| `where_match_columns` | yes | | Columns matched with `LIKE '%word%'` for each word in the query. |
+| `uid` | no | none | When truthy, set the Alfred item `uid` to the row's `arg` (lets Alfred learn/sort by usage). |
+| `immutable` | no | `false` | Open the DB read-only via the `immutable=1` URI. Takes no lock, so a DB being written to (e.g. a running Chrome `History`) can be read directly without copying. |
+
+### Normal Mode options
+
+alite builds the SQL for you from these keys.
+
+| Key | Required | Default | Description |
+| --- | --- | --- | --- |
+| `table_name` | yes | | Table to query. |
+| `title_key` | yes | | Column used as the item `title`. |
+| `subtitle_key` | no | empty | Column used as the item `subtitle`. |
+| `arg_key` | no | | Column used as the item `arg`. |
+| `where_base` | no | `1 = 1` | Extra WHERE condition AND-ed with the query match (e.g. `deleted = 0`). |
+| `order` | no | none | Column to `ORDER BY ... DESC`. |
+| `initial_limit` | no | `20` | `LIMIT` applied to the query. |
+
+### SQL Mode options
+
+Write the full SQL yourself. Note:
+
+1. You **must** include a `WHERE` clause — the query match is injected right after the `where` keyword.
+2. Alias output columns to `title`, `subtitle`, and `arg` with `as`.
+
+| Key | Required | Default | Description |
+| --- | --- | --- | --- |
+| `sql` | yes | | The SQL statement to run. The word-match condition is inserted just after `where`. |
+| `adapter` | no | | Adapter name (informational; only `sqlite3` is supported). |
+
 ### execute
 
 ```bash
